@@ -8,3 +8,4 @@ In the example used, you can check that NB mixture produce infinite estimates of
 References :    
 Dennis, E.B., Morgan, B.J. and Ridout, M.S. (2015), Computational aspects of N-mixture models. Biom, 71: 237-246.     
 Guillera-Arroita, G., Ridout, M. S., Morgan, B. J. T., and Linkie, M. (2012). Models for species-detection data collected along transects in the presence of abundance-induced heterogene ity and clustering in the detection process. Methods in Ecology and Evolution 3, 358–367     
+Royle, J.A. (2004). N-mixture models for estimating population size from spatially replicated counts. Biometrics 60, 108-115.   
