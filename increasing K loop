@@ -1,0 +1,92 @@
+library(unmarked)
+
+# use a dataset (values are count data)
+DATA=matrix(c(102,63,105,78,3,9,10,5,2,0,5,3,2,13,1,6,2,1,1,117,80,83,150,9,8,7,2,1,0,8,3,3,12,0,6,1,0,1,80,70,78,92,4,7,5,6,0,0,7,2,2,3,0,2,1,1,1), nrow=19,ncol=3,byrow=FALSE)
+DATA
+summary(DATA)  # check that max abundance value is 150 during visit 2 
+
+#create a unmarkedframe object to be analysed using pcount function in unmarked
+umf1 <- unmarkedFramePCount(y=DATA, siteCovs=NULL, obsCovs=NULL)
+summary(umf1)  
+
+# when using pcount function a value for K is required (which has to be > to max(DATA)) 
+# start with K = 151 and use a negative binomial distribution as mixture
+fm <- pcount(~1 ~ 1, umf1, K=151,mixture=c("NB")) # alternatively mixture=c("P") or mixture=c("ZIP")
+fm
+
+##################################################"
+##### check how the estimate varies with K########
+###################################################
+
+#######################
+## 1) NB as mixture  ##
+#######################
+
+op <- par(mfrow = c(3, 2), # 3 x 2 pictures on one plot
+          pty = "s")       # square plotting region, independent of device size
+
+
+# loop to fit i model for NB mixture with increasing value for K croissant (here 151 < K < 400) 
+mat<-matrix(NA,1000)
+p <- matrix(NA,1000)
+for (i in 151:1000)
+{fmC <- pcount(~ 1 ~ 1, umf1, K=i,mixture=c("NB")) # fmC is the Constant model lambda(.)p(.)
+plogis(coef(fmC, type="det")) 
+fmCre <- ranef(fmC)
+sum(bup(fmCre)) # Estimated population size
+colSums(confint(fmCre)) # and 95% CI
+predict(fmC,type="det", appendData=T)
+mat[i] <- sum(bup(fmCre))
+p[i] <- plogis(coef(fmC, type="det")) 
+i <- i + 1
+}
+plot(mat,xlim=c(0,1000),ylim=c(0,15000), xlab="K",ylab="Estimated size (Lambda)",main="Effect of increasing K on lambda - NB distribution")
+plot(p,xlim=c(0,1000),ylim=c(0,1), xlab="K",ylab="Detection probability",main="Effect of increasing K on lambda - NB distribution")
+
+
+##################
+## P as mixture ##
+##################
+    
+    
+# loop to fit i model for NB mixture with increasing value for K croissant (here 151 < K < 400) 
+mat<-matrix(NA,1000)
+p <- matrix(NA,1000)
+for (i in 151:1000)
+  {fmC <- pcount(~ 1 ~ 1, umf1, K=i,mixture=c("P")) # fmC is the Constant model lambda(.)p(.)
+    plogis(coef(fmC, type="det")) 
+    fmCre <- ranef(fmC)
+    sum(bup(fmCre)) # Estimated population size
+    colSums(confint(fmCre)) # and 95% CI
+    predict(fmC,type="det", appendData=T)
+    mat[i] <- sum(bup(fmCre))
+    p[i] <- plogis(coef(fmC, type="det")) 
+    i <- i + 1
+    }
+plot(mat,xlim=c(0,1000),ylim=c(0,15000), xlab="K",ylab="Estimated size (Lambda)",main="Effect of increasing K on lambda - P distribution")
+plot(p,xlim=c(0,1000),ylim=c(0,1), xlab="K",ylab="Detection probability",main="Effect of increasing K on lambda - P distribution")
+
+
+##################
+## ZIP as mixture
+##################    
+        
+        
+# loop to fit i model for NB mixture with increasing value for K croissant (here 151 < K < 400) 
+mat<-matrix(NA,1000)
+p <- matrix(NA,1000)
+for (i in 151:1000)
+    {fmC <- pcount(~ 1 ~ 1, umf1, K=i,mixture=c("ZIP")) # fmC is the Constant model lambda(.)p(.)
+        plogis(coef(fmC, type="det")) 
+        fmCre <- ranef(fmC)
+        sum(bup(fmCre)) # Estimated population size
+        colSums(confint(fmCre)) # and 95% CI
+        predict(fmC,type="det", appendData=T)
+        mat[i] <- sum(bup(fmCre))
+        p[i] <- plogis(coef(fmC, type="det")) 
+        i <- i + 1
+        }
+plot(mat,xlim=c(0,1000),ylim=c(0,15000), xlab="K",ylab="Estimated size (Lambda)",main="Effect of increasing K on lambda - ZIP distribution")
+plot(p,xlim=c(0,1000),ylim=c(0,1), xlab="K",ylab="Detection probability",main="Effect of increasing K on lambda - ZIP distribution")
+        
+        
